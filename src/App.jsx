@@ -10,7 +10,7 @@ const App = () => {
   const [tableData, setTableData] = useState([]);
   const [dropdownOptions, setDropdownOptions] = useState({});
   const [tableProgress, setTableProgress] = useState(false);
-  const [dropdownProgress, setDropdownProgress] = useState(false);
+  // const [dropdownProgress, setDropdownProgress] = useState(false);
   const filter = useRef({});
   const allTableData = useRef([]);
   const allOptions = useRef({});
@@ -21,7 +21,7 @@ const App = () => {
 
   useEffect(() => {
     setTableProgress(true);
-    setDropdownProgress(true);
+    // setDropdownProgress(true);
 
     const columns = [];
     headers?.forEach((header) => {
@@ -60,7 +60,7 @@ const App = () => {
 
   useEffect(() => {
     setTableProgress(false);
-    setDropdownProgress(false);
+    // setDropdownProgress(false);
   }
     , [tableData]);
 
@@ -71,23 +71,21 @@ const App = () => {
       <CSVSelector onChange={(data) => setFileData(data)} />
       {
         headers?.map((header, idx) =>
-          <>
-            <Dropdown
-              key={idx}
-              headers={headers}
-              header={header}
-              allTableData={allTableData}
-              tableData={tableData}
-              setTableData={setTableData}
-              allOptions={allOptions.current}
-              options={dropdownOptions[header]}
-              setOptions={setDropdownOptions}
-              filter={filter}
-              setTableProgress={setTableProgress}
-              dropdownProgress={dropdownProgress}
-              setDropdownProgress={setDropdownProgress}
-            />
-          </>
+          <Dropdown
+            key={idx}
+            headers={headers}
+            header={header}
+            allTableData={allTableData}
+            tableData={tableData}
+            setTableData={setTableData}
+            allOptions={allOptions.current}
+            options={dropdownOptions[header]}
+            setOptions={setDropdownOptions}
+            filter={filter}
+            setTableProgress={setTableProgress}
+          // dropdownProgress={dropdownProgress}
+          // setDropdownProgress={setDropdownProgress}
+          />
         )
       }
       <Table

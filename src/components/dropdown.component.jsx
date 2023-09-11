@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import Multiselect from 'multiselect-react-dropdown';
 import { memo } from 'react';
 
@@ -6,7 +7,7 @@ const Dropdown = ({ allTableData, setTableData, allOptions, options, setOptions,
 
     const selectUnselectHandler = (selectedList) => {
         setTableProgress(true);
-        setDropdownProgress(true);
+        // setDropdownProgress(true);
 
         const worker = new Worker(new URL('../web-workers/filter.worker.js', import.meta.url));
         const messageData = {
@@ -20,7 +21,8 @@ const Dropdown = ({ allTableData, setTableData, allOptions, options, setOptions,
         worker.postMessage(messageData);
 
         worker.onmessage = (event) => {
-            const { data, newOptions } = event.data;
+            const { data, newOptions, newFilter } = event.data;
+            filter.current = newFilter.current;
             setTableData(() => data);
             setOptions(() => newOptions);
         };
@@ -37,7 +39,7 @@ const Dropdown = ({ allTableData, setTableData, allOptions, options, setOptions,
                 showCheckbox
                 options={options}
                 placeholder={header}
-                loading={dropdownProgress}
+            // loading={dropdownProgress}
             />
         </>
     )

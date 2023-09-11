@@ -61,9 +61,9 @@ function filterWorker(
         if (i === 0 && idx === data.length - 1) {
           newOptions[header] = allOptions[header];
         } else {
-          // if (rowObj[header] !== "No Data") {
-          newOptions[header].add(rowObj[header]);
-          // }
+          if (rowObj[header] !== "No Data") {
+            newOptions[header].add(rowObj[header]);
+          }
         }
         i += 1;
       }
@@ -74,7 +74,9 @@ function filterWorker(
       newOptions[header].sort((a, b) => a - b);
     });
 
-    return { data, newOptions };
+    const newFilter = filter;
+
+    return { data, newOptions, newFilter };
   };
 
   return applyFilters();
