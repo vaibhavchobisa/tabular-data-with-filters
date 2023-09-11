@@ -1,14 +1,16 @@
+import { useState, useEffect, useRef, useMemo } from 'react';
 import './App.css';
 import CSVSelector from './components/csv-selector.component';
 import Table from './components/table.component';
 import Dropdown from './components/dropdown.component';
 
-import { useState, useEffect, useRef, useMemo } from 'react';
 
 const App = () => {
   const [fileData, setFileData] = useState([]);
   const [tableData, setTableData] = useState([]);
   const [dropdownOptions, setDropdownOptions] = useState({});
+  const [tableProgress, setTableProgress] = useState(false);
+  const [dropdownProgress, setDropdownProgress] = useState(false);
   const filter = useRef({});
   const allTableData = useRef([]);
   const allOptions = useRef({});
@@ -18,6 +20,9 @@ const App = () => {
   const rows = useMemo(() => fileData.slice(1), [fileData]);
 
   useEffect(() => {
+    setTableProgress(true);
+    setDropdownProgress(true);
+
     const columns = [];
     headers?.forEach((header) => {
       const headerObj = {};
@@ -46,9 +51,18 @@ const App = () => {
       setDropdownOptions(() => options);
     };
 
+    const rowHeight = document.querySelector("#row-1")?.scrollHeight;
+    console.log(rowHeight)
+
     return () => worker.terminate();
   }
     , [fileData])
+
+  useEffect(() => {
+    setTableProgress(false);
+    setDropdownProgress(false);
+  }
+    , [tableData]);
 
   console.log('app.jsx ran');
 
@@ -57,21 +71,31 @@ const App = () => {
       <CSVSelector onChange={(data) => setFileData(data)} />
       {
         headers?.map((header, idx) =>
-          <Dropdown
-            key={idx}
-            headers={headers}
-            header={header}
-            allTableData={allTableData}
-            tableData={tableData}
-            setTableData={setTableData}
-            allOptions={allOptions.current}
-            options={dropdownOptions[header]}
-            setOptions={setDropdownOptions}
-            filter={filter}
-          />
+          <>
+            <Dropdown
+              key={idx}
+              headers={headers}
+              header={header}
+              allTableData={allTableData}
+              tableData={tableData}
+              setTableData={setTableData}
+              allOptions={allOptions.current}
+              options={dropdownOptions[header]}
+              setOptions={setDropdownOptions}
+              filter={filter}
+              setTableProgress={setTableProgress}
+              dropdownProgress={dropdownProgress}
+              setDropdownProgress={setDropdownProgress}
+            />
+          </>
         )
       }
-      <Table tableData={tableData} columns={columnNames.current} />
+      <Table
+        tableData={tableData}
+        columns={columnNames.current}
+        tableProgress={tableProgress}
+        setTableProgress={setTableProgress}
+      />
     </>
   );
 
