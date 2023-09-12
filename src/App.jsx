@@ -22,7 +22,7 @@ const App = () => {
     headers?.forEach((header) => {
       const headerObj = {};
       headerObj["name"] = header;
-      headerObj["sortable"] = true;
+      // headerObj["sortable"] = true;
       headerObj["selector"] = (row) => row[header];
       columns.push(headerObj);
 
@@ -55,23 +55,35 @@ const App = () => {
   return (
     <>
       <CSVSelector onChange={(data) => setFileData(data)} />
-      {
-        headers?.map((header, idx) =>
-          <Dropdown
-            key={idx}
-            headers={headers}
-            header={header}
-            allTableData={allTableData}
-            tableData={tableData}
-            setTableData={setTableData}
-            allOptions={allOptions.current}
-            options={dropdownOptions[header]}
-            setOptions={setDropdownOptions}
-            filter={filter}
-          />
-        )
-      }
-      <Table tableData={tableData} columns={columnNames.current} />
+      <div id='dropdowns-container'>
+        {
+          headers?.map((header, idx) =>
+            <Dropdown
+              key={idx}
+              headers={headers}
+              header={header}
+              allTableData={allTableData}
+              tableData={tableData}
+              setTableData={setTableData}
+              allOptions={allOptions.current}
+              options={dropdownOptions[header]}
+              setOptions={setDropdownOptions}
+              filter={filter}
+              setTableProgress={setTableProgress}
+            // dropdownProgress={dropdownProgress}
+            // setDropdownProgress={setDropdownProgress}
+            />
+          )
+        }
+      </div>
+      <div id='table-container'>
+        <Table
+          tableData={tableData}
+          columns={columnNames.current}
+          tableProgress={tableProgress}
+          setTableProgress={setTableProgress}
+        />
+      </div>
     </>
   );
 

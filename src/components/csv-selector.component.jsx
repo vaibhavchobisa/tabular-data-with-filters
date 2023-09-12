@@ -17,7 +17,7 @@ const CSVSelector = ({ onChange }) => {
             }
         }
     };
-    return <input type="file" accept=".csv" onChange={handleFileChange} />;
+    return <input id="upload" type="file" accept=".csv" onChange={handleFileChange} />;
 };
 
 export default memo(CSVSelector);

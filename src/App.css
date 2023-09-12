@@ -3,7 +3,33 @@
   padding: 0;
 }
 
-#multiselectContainerReact,
-input {
-  cursor: pointer;
+#multiselectContainerReact {
+  /* cursor: pointer; */
+}
+
+#dropdowns-container {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  /* justify-content: center; */
+  align-items: center;
+}
+
+#upload {
+  /* margin: 1rem auto; */
+  margin-top: 3rem;
+  margin-bottom: 2rem;
+  font-size: 15px;
+}
+
+#table-container {
+  width: 80vw;
+  border: 1px solid lightgray;
+  border-radius: 0.8rem;
+  /* align-self: center; */
 }

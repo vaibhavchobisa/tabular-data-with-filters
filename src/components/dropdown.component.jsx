@@ -1,7 +1,33 @@
 import Multiselect from 'multiselect-react-dropdown';
 import { memo } from 'react';
 
-const Dropdown = ({ allTableData, setTableData, allOptions, options, setOptions, headers, header, filter }) => {
+const dropdownStyle = {
+    multiselectContainer: {
+        // marginRight: "30px",
+        paddingLeft: "1rem",
+        paddingRight: "1rem",
+        paddingBottom: "1.5rem",
+        width: "220px"
+    },
+    inputField: {
+        paddingLeft: "12px"
+    }
+}
+
+const dropdownStyle = {
+    multiselectContainer: {
+        // marginRight: "30px",
+        paddingLeft: "1rem",
+        paddingRight: "1rem",
+        paddingBottom: "1.5rem",
+        width: "220px"
+    },
+    inputField: {
+        paddingLeft: "12px"
+    }
+}
+
+const Dropdown = ({ allTableData, setTableData, allOptions, options, setOptions, headers, header, filter, setTableProgress, dropdownProgress, setDropdownProgress }) => {
 
     const selectUnselectHandler = (selectedList) => {
         filter.current[header] = selectedList;
@@ -67,6 +93,8 @@ const Dropdown = ({ allTableData, setTableData, allOptions, options, setOptions,
                 showCheckbox
                 options={options}
                 placeholder={header}
+                style={dropdownStyle}
+            // loading={dropdownProgress}
             />
         </>
     )
