@@ -16,9 +16,14 @@ function populateData(headers, rows) {
     rowObj.id = i + 1;
 
     headers?.forEach((header, j) => {
-      row[j] ? (rowObj[header] = row[j]) : (rowObj[header] = "No Data");
+      row[j]
+        ? (rowObj[header] = parseInt(row[j]))
+        : (rowObj[header] = "No Data");
 
-      if (row[j]) options[header].add(row[j]);
+      if (row[j]) {
+        options[header].add({ value: parseInt(row[j]), label: row[j] });
+        // options[header].add(row[j]);
+      }
     });
 
     data.push(rowObj);
@@ -26,7 +31,7 @@ function populateData(headers, rows) {
 
   for (let header in options) {
     options[header] = [...options[header]];
-    options[header].sort((a, b) => a - b);
+    options[header].sort((a, b) => a["value"] - b["value"]);
   }
 
   return { data, options };

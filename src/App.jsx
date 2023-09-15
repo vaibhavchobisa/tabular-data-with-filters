@@ -2,15 +2,23 @@ import { useState, useEffect, useRef, useMemo } from 'react';
 import './App.css';
 import CSVSelector from './components/csv-selector.component';
 import Table from './components/table.component';
-import Dropdown from './components/dropdown.component';
+// import Dropdown from './components/dropdown.component';
+import SelectWrapper from './components/select-wrapper.component';
 
 
 const App = () => {
   const [fileData, setFileData] = useState([]);
   const [tableData, setTableData] = useState([]);
-  const [dropdownOptions, setDropdownOptions] = useState({});
+  // const [dropdownOptions, setDropdownOptions] = useState({});
   const [tableProgress, setTableProgress] = useState(false);
   // const [dropdownProgress, setDropdownProgress] = useState(false);
+
+  const [options, setOptions] = useState({});
+  const [pageNo, setPage] = useState(0);
+  const [hasNextPage, setHasNextPage] = useState(true);
+  const [isNextPageLoading, setNextPageLoading] = useState(false);
+  const [selectedValue, setSelectedOption] = useState('');
+
   const filter = useRef({});
   const allTableData = useRef([]);
   const allOptions = useRef({});
@@ -48,11 +56,9 @@ const App = () => {
       allTableData.current = data;
       allOptions.current = options;
       setTableData(() => data);
-      setDropdownOptions(() => options);
+      setOptions(() => options);
+      // setDropdownOptions(() => options);
     };
-
-    const rowHeight = document.querySelector("#row-1")?.scrollHeight;
-    console.log(rowHeight)
 
     return () => worker.terminate();
   }
@@ -64,12 +70,55 @@ const App = () => {
   }
     , [tableData]);
 
-  console.log('app.jsx ran');
+
+  const loadOptions = (header, page) => {
+    const totalSize = allOptions.current[header]?.length;
+
+    let newOptions;
+    if (page === 0) {
+      newOptions = allOptions.current[header]?.slice(0, 200);
+    } else {
+      newOptions = allOptions.current[header]?.slice(200 * page, 200 * (pageNo + 1));
+    }
+
+    setNextPageLoading(true);
+    const itemsData = options[header]?.concat(newOptions);
+    setOptions(options => {
+      const obj = { ...options };
+      obj[header] = itemsData;
+      return obj;
+    });
+    setNextPageLoading(false);
+    setHasNextPage(itemsData?.length < totalSize);
+    setPage(page);
+  };
+
+  const loadNextPage = (header) => {
+    loadOptions(pageNo + 1, header);
+  };
+
 
   return (
     <>
       <CSVSelector onChange={(data) => setFileData(data)} />
-      <div id='dropdowns-container'>
+      {
+        headers?.map((header, idx) => {
+          <SelectWrapper
+            value={selectedValue}
+            placeholder={header}
+            hasNextPage={hasNextPage}
+            isNextPageLoading={isNextPageLoading}
+            options={options[header]}
+            loadNextPage={loadNextPage(header)}
+            onChange={(selected) => setSelectedOption(selected)}
+            // header={header}
+            isClearable
+            isMulti
+            isSearchable
+          />
+        })
+      }
+      {/* <div id='dropdowns-container'>
         {
           headers?.map((header, idx) =>
             <Dropdown
@@ -89,7 +138,7 @@ const App = () => {
             />
           )
         }
-      </div>
+      </div> */}
       <div id='table-container'>
         <Table
           tableData={tableData}
