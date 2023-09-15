@@ -15,7 +15,7 @@ const dropdownStyle = {
     }
 }
 
-const Dropdown = ({ allTableData, setTableData, allOptions, options, setOptions, headers, header, filter, setTableProgress, dropdownProgress, setDropdownProgress }) => {
+const Dropdown = ({ allTableData, tableData, setTableData, allOptions, options, setOptions, headers, header, filter, setTableProgress, dropdownProgress, setDropdownProgress }) => {
 
     const selectUnselectHandler = (selectedList) => {
         setTableProgress(true);
@@ -24,6 +24,7 @@ const Dropdown = ({ allTableData, setTableData, allOptions, options, setOptions,
         const worker = new Worker(new URL('../web-workers/filter.worker.js', import.meta.url));
         const messageData = {
             allTableData,
+            tableData,
             allOptions,
             selectedList,
             headers,
@@ -52,6 +53,7 @@ const Dropdown = ({ allTableData, setTableData, allOptions, options, setOptions,
                 options={options}
                 placeholder={header}
                 style={dropdownStyle}
+                showArrow
             // loading={dropdownProgress}
             />
         </>

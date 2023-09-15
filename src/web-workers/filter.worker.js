@@ -1,10 +1,18 @@
 self.addEventListener("message", (event) => {
-  const { selectedList, allTableData, allOptions, headers, header, filter } =
-    event.data;
+  const {
+    selectedList,
+    allTableData,
+    tableData,
+    allOptions,
+    headers,
+    header,
+    filter,
+  } = event.data;
 
   const result = filterWorker(
     selectedList,
     allTableData,
+    tableData,
     allOptions,
     headers,
     header,
@@ -17,6 +25,7 @@ self.addEventListener("message", (event) => {
 function filterWorker(
   selectedList,
   allTableData,
+  tableData,
   allOptions,
   headers,
   header,
@@ -24,40 +33,80 @@ function filterWorker(
 ) {
   filter.current[header] = selectedList;
 
-  const arrangeFilterByLength = (obj) => {
-    const keyValueArray = Object.entries(obj);
-    keyValueArray.sort((a, b) => b[1].length - a[1].length);
-    const sortedObject = Object.fromEntries(keyValueArray);
-
-    return sortedObject;
-  };
-  const sortedFilter = arrangeFilterByLength(filter.current);
-
   const applyFilters = () => {
-    let i = 0;
+    let data;
     const newOptions = {};
-    let data = allTableData.current;
 
     headers.forEach((header) => {
       newOptions[header] = new Set();
     });
 
-    for (const [header, filterArr] of Object.entries(sortedFilter)) {
+    const checkFilterArrays = (arr) => {
+      let nonEmptyCount = 0;
+      let nonEmptyLength = 0;
+
+      for (let i = 0; i < arr.length; i++) {
+        if (Array.isArray(arr[i]) && arr[i].length > 0) {
+          nonEmptyCount++;
+          if (arr[i].length === 1) {
+            nonEmptyLength = 1;
+          } else if (arr[i].length > 1) {
+            nonEmptyLength = Math.max(nonEmptyLength, arr[i].length);
+          }
+        }
+      }
+
+      if (nonEmptyCount === 0) {
+        data = allTableData.current;
+        return "0";
+      } else if (nonEmptyCount === 1 && nonEmptyLength === 1) {
+        let newObj, frontHeader;
+        data = allTableData.current;
+        for (const [header, filterArr] of Object.entries(filter.current)) {
+          if (filterArr.length === 1) {
+            newObj = { [header]: filter.current[header] };
+            frontHeader = header;
+          }
+        }
+        for (const key in filter.current) {
+          if (key !== frontHeader) {
+            newObj[key] = filter.current[key];
+          }
+        }
+        filter.current = newObj;
+        return "1-1";
+      } else if (nonEmptyCount === 1 && nonEmptyLength > 1) {
+        data = allTableData.current;
+        return "1>1";
+      } else {
+        data = tableData;
+        return ">1";
+      }
+    };
+
+    const filterArrays = Object.values(filter.current);
+
+    const filterOperationStatus = checkFilterArrays(filterArrays);
+
+    console.log(filterOperationStatus);
+
+    // now applying the filters to data and then options
+
+    let i = 0;
+    for (const [header, filterArr] of Object.entries(filter.current)) {
       if (filterArr.length !== 0) {
-        if (i === 0) {
-          data = allTableData.current.filter((rowObj) =>
-            filterArr.includes(rowObj[header])
-          );
-        } else {
+        if (filterOperationStatus === ">1" && i !== 0) {
+          data = data.filter((rowObj) => filterArr.includes(rowObj[header]));
+        } else if (filterOperationStatus !== ">1") {
           data = data.filter((rowObj) => filterArr.includes(rowObj[header]));
         }
-        i += 1;
       }
+      i += 1;
     }
 
     data.forEach((rowObj, idx) => {
-      i = 0;
-      for (const header in sortedFilter) {
+      let i = 0;
+      for (const header in filter.current) {
         if (i === 0 && idx === data.length - 1) {
           newOptions[header] = allOptions[header];
         } else {
@@ -73,6 +122,8 @@ function filterWorker(
       newOptions[header] = [...newOptions[header]];
       newOptions[header].sort((a, b) => a - b);
     });
+
+    console.log(filter.current);
 
     const newFilter = filter;
 
