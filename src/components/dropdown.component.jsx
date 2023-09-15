@@ -52,6 +52,7 @@ const Dropdown = ({ allTableData, setTableData, allOptions, options, setOptions,
                 options={options}
                 placeholder={header}
                 style={dropdownStyle}
+                showArrow
             // loading={dropdownProgress}
             />
         </>
