@@ -22,7 +22,7 @@
 
 #upload {
   /* margin: 1rem auto; */
-  margin-top: 3rem;
+  margin-top: 2rem;
   margin-bottom: 2rem;
   font-size: 15px;
 }
@@ -31,5 +31,10 @@
   width: 80vw;
   border: 1px solid lightgray;
   border-radius: 0.8rem;
+  margin-top: 0.5rem;
   /* align-self: center; */
+}
+
+.icon_cancel {
+  cursor: pointer;
 }
