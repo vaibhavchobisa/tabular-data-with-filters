@@ -4,7 +4,6 @@ import CSVSelector from './components/csv-selector.component';
 import Table from './components/table.component';
 import Dropdown from './components/dropdown.component';
 
-
 const App = () => {
   const [fileData, setFileData] = useState([]);
   const [tableData, setTableData] = useState([]);
@@ -14,7 +13,10 @@ const App = () => {
   const filter = useRef({});
   const allTableData = useRef([]);
   const allOptions = useRef({});
+  const bigOptions = useRef({});
   const columnNames = useRef([]);
+  const pageNo = useRef({});
+  const hasRunOnce = useRef(false);
 
   const headers = useMemo(() => fileData[0], [fileData]);
   const rows = useMemo(() => fileData.slice(1), [fileData]);
@@ -32,6 +34,7 @@ const App = () => {
       columns.push(headerObj);
 
       filter.current[header] = [];
+      pageNo.current[header] = 0;
     });
     columnNames.current = columns;
 
@@ -47,12 +50,19 @@ const App = () => {
       const { data, options } = event.data;
       allTableData.current = data;
       allOptions.current = options;
-      setTableData(() => data);
-      setDropdownOptions(() => options);
-    };
 
-    const rowHeight = document.querySelector("#row-1")?.scrollHeight;
-    console.log(rowHeight)
+      let i = 0;
+      const newOptions = JSON.parse(JSON.stringify(options));
+      for (let header in newOptions) {
+        if (newOptions[header].length > 200) {
+          bigOptions.current[header] = i;
+          newOptions[header] = newOptions[header].slice(0, 200);
+        }
+        i++;
+      }
+      setTableData(data);
+      setDropdownOptions(newOptions);
+    };
 
     return () => worker.terminate();
   }
@@ -60,11 +70,30 @@ const App = () => {
 
   useEffect(() => {
     setTableProgress(false);
-    // setDropdownProgress(false);
   }
     , [tableData]);
 
-  console.log('app.jsx ran');
+  useEffect(() => {
+    if (Object.keys(dropdownOptions).length && !hasRunOnce.current) {
+      const dropdowns = document.querySelectorAll(".optionContainer");
+      for (let [header, index] of Object.entries(bigOptions.current)) {
+        dropdowns[index].addEventListener('scroll', function () {
+          if (dropdowns[index].scrollHeight - dropdowns[index].scrollTop === dropdowns[index].clientHeight) {
+            pageNo.current[header] += 1;
+            setDropdownOptions((options) => {
+              const obj = { ...options };
+              const upperBound = 200 * (pageNo.current[header] + 1);
+              obj[header] = allOptions.current[header].slice(0, upperBound);
+              return obj;
+            })
+          }
+        })
+      }
+      hasRunOnce.current = true;
+    }
+  }, [dropdownOptions]);
+
+  // console.log('app.jsx ran');
 
   return (
     <>
@@ -80,6 +109,7 @@ const App = () => {
               tableData={tableData}
               setTableData={setTableData}
               allOptions={allOptions.current}
+              // bigOptions={bigOptions.current}
               options={dropdownOptions[header]}
               setOptions={setDropdownOptions}
               filter={filter}

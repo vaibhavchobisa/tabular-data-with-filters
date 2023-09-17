@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import Multiselect from 'multiselect-react-dropdown';
-import { memo } from 'react';
+import { memo, useEffect } from 'react';
 
 const dropdownStyle = {
     multiselectContainer: {
@@ -15,7 +15,7 @@ const dropdownStyle = {
     }
 }
 
-const Dropdown = ({ allTableData, setTableData, allOptions, options, setOptions, headers, header, filter, setTableProgress, dropdownProgress, setDropdownProgress }) => {
+const Dropdown = ({ allTableData, setTableData, allOptions, options, setOptions, headers, header, filter, setTableProgress }) => {
 
     const selectUnselectHandler = (selectedList) => {
         setTableProgress(true);
