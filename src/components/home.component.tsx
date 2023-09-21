@@ -164,10 +164,6 @@ const Home: React.FC = () => {
             setFileData(parsedFileData);
         }
 
-        if (fileData) {
-            setFileData(fileData);
-        }
-
         const upload = document.querySelector<HTMLInputElement>('#upload');
         if (upload) {
             upload.addEventListener('click', () => {
