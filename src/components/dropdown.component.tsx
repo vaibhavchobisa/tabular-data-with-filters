@@ -1,7 +1,7 @@
 import Multiselect from 'multiselect-react-dropdown';
 import { memo } from 'react';
 
-const dropdownStyle = {
+const dropdownStyle:object = {
     multiselectContainer: {
         paddingLeft: "1rem",
         paddingRight: "1rem",

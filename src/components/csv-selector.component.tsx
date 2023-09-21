@@ -1,4 +1,3 @@
-import React from "react";
 import Papa from "papaparse";
 import { memo } from "react";
 
