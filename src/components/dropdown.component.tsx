@@ -1,10 +1,8 @@
-/* eslint-disable react/prop-types */
 import Multiselect from 'multiselect-react-dropdown';
 import { memo } from 'react';
 
 const dropdownStyle = {
     multiselectContainer: {
-        // marginRight: "30px",
         paddingLeft: "1rem",
         paddingRight: "1rem",
         paddingBottom: "1.5rem",
@@ -15,7 +13,15 @@ const dropdownStyle = {
     }
 }
 
-const Dropdown = ({ options, header, onSelectRemove, preSelectedValues, tableProgress }) => {
+interface DropdownProps {
+    options: string[];
+    header: string;
+    onSelectRemove: (selectedList: string[], selectRemoveValue: string, header: string) => void;
+    preSelectedValues: string[];
+    tableProgress: boolean;
+}
+
+const Dropdown: React.FC<DropdownProps> = ({ options, header, onSelectRemove, preSelectedValues, tableProgress }) => {
 
     return (
         <>

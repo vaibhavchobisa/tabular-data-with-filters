@@ -1,20 +1,25 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import * as JSURL from "jsurl";
+import * as JSURL from 'jsurl';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import '../App.css';
 import CSVSelector from './csv-selector.component';
 import Table from './table.component';
 import Dropdown from './dropdown.component';
 
-// defining a custom hook for safe URL encoding
-const useQueryParam = (key) => {
+// Define the shape of your filter object
+interface Filter {
+    [key: string]: string[];
+}
+
+// Defining a custom hook for safe URL encoding
+const useQueryParam = (key: string) => {
     const [searchParams, setSearchParams] = useSearchParams();
     const paramValue = searchParams.get(key);
 
     const value = useMemo(() => JSURL.parse(paramValue), [paramValue]);
 
     const setValue = useCallback(
-        (newValue, options) => {
+        (newValue: any, options?: { replace: boolean }) => {
             const newSearchParams = new URLSearchParams(searchParams);
             newSearchParams.set(key, JSURL.stringify(newValue));
             setSearchParams(newSearchParams, options);
@@ -22,29 +27,32 @@ const useQueryParam = (key) => {
         [key, searchParams, setSearchParams]
     );
 
-    return [value, setValue];
+    return [value, setValue] as const;
 }
 
-const Home = () => {
-    const [fileData, setFileData] = useState([]);
-    const [tableData, setTableData] = useState([]);
-    const [dropdownOptions, setDropdownOptions] = useState({});
+const Home: React.FC = () => {
+    const [fileData, setFileData] = useState<any[][]>([]);
+    const [tableData, setTableData] = useState<any[][]>([]);
+    const [dropdownOptions, setDropdownOptions] = useState<{ [key: string]: any[] }>({});
     const [tableProgress, setTableProgress] = useState(false);
     const [dataPopulated, setDataPopulated] = useState(false);
-    let [queryParams, setQueryParams] = useQueryParam("filter");
-
+    const [queryParams, setQueryParams] = useQueryParam("filter");
+    
     const navigate = useNavigate();
-
-    const filter = useRef({});
-    const allTableData = useRef([]);
-    const allOptions = useRef({});
-    const bigOptions = useRef({});
-    const columnNames = useRef([]);
-    const pageNo = useRef({});
+    
+    const filter = useRef<Filter>({});
+    const allTableData = useRef<any[][]>([]);
+    const allOptions = useRef<{ [key: string]: any[] }>({});
+    const bigOptions = useRef<{ [key: string]: number }>({});
+    const columnNames = useRef<any[]>([]);
+    const pageNo = useRef<{ [key: string]: number }>({});
     const hasRunOnce = useRef(false);
-
+    
     const headers = useMemo(() => fileData[0], [fileData]);
     const rows = useMemo(() => fileData.slice(1), [fileData]);
+
+    // ... Rest of the code remains unchanged
+
 
     // For populating data when a file upload occurs, or when a project URL is visited directly
     useEffect(() => {
@@ -54,16 +62,18 @@ const Home = () => {
             setTableProgress(true);
             filter.current = {}; // resetting for when a new file-upload happens
 
-            const columns = [];
+            const columns: { name: string; selector: (row: any) => any }[] = [];
             headers?.forEach((header) => {
-                const headerObj = {};
-                headerObj["name"] = header;
-                // headerObj["sortable"] = true;
-                headerObj["selector"] = (row) => row[header];
-                columns.push(headerObj);
 
-                filter.current[header] = [];
-                pageNo.current[header] = 0;
+            const headerObj: { name: string; selector: (row: any) => any } = {
+            name: header,
+            selector: (row) => row[header],
+            };
+
+            columns.push(headerObj);
+
+            filter.current[header] = [];
+            pageNo.current[header] = 0;
             });
             columnNames.current = columns;
 
@@ -148,18 +158,34 @@ const Home = () => {
 
     // For persisting "fileData" on every re-load, which will further be filtered depending on queryParams(filters)
     useEffect(() => {
-        const fileData = JSON.parse(localStorage.getItem('fileData'));
+        const fileDataJSON = localStorage.getItem('fileData');
+        if (fileDataJSON) {
+            const parsedFileData = JSON.parse(fileDataJSON) as any[];
+            setFileData(parsedFileData);
+        }
 
         if (fileData) {
             setFileData(fileData);
         }
 
-        const upload = document.querySelector('#upload');
-        upload.addEventListener('click', () => {
-            navigate('/');
-            filter.current = {};
-            setTableData(allTableData.current);
-        })
+        const upload = document.querySelector<HTMLInputElement>('#upload');
+        if (upload) {
+            upload.addEventListener('click', () => {
+                navigate('/');
+                filter.current = {};
+                setTableData(allTableData.current);
+            });
+        }
+
+        return () => {
+            if (upload) {
+                upload.removeEventListener('click', () => {
+                    navigate('/');
+                    filter.current = {};
+                    setTableData(allTableData.current);
+                });
+            }
+        };
 
     }, []);
 
@@ -194,10 +220,8 @@ const Home = () => {
 
 
     // handler for when a user selects/unselects an option from the dropdown
-    const selectUnselectHandler = (...args) => {
-        const [selectedList, , header] = args;
+    const selectUnselectHandler = (selectedList: string[], _: any, header: string) => {
         filter.current[header] = selectedList;
-
         setQueryParams(filter.current);
     }
 
@@ -213,7 +237,6 @@ const Home = () => {
                             options={dropdownOptions[header]}
                             header={header}
                             onSelectRemove={selectUnselectHandler}
-                            fileData={fileData}
                             preSelectedValues={filter.current[header]}
                             tableProgress={tableProgress}
                         />
@@ -225,7 +248,6 @@ const Home = () => {
                     tableData={tableData}
                     columns={columnNames.current}
                     tableProgress={tableProgress}
-                    setTableProgress={setTableProgress}
                 />
             </div>
         </>

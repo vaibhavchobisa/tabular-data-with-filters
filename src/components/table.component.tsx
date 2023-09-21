@@ -1,21 +1,25 @@
 import DataTable from 'react-data-table-component';
 import { memo } from 'react';
 
+interface TableProps {
+    tableData: any[][];
+    columns: any[];
+    tableProgress: boolean;
+}
+
 const paginationComponentOptions = {
     // noRowsPerPage: true,
-}
+};
 
 const customStyles = {
     rows: {
         style: {
             minHeight: '25px',
-        }
-    }
-}
+        },
+    },
+};
 
-// eslint-disable-next-line react/prop-types
-const Table = ({ tableData, columns, tableProgress }) => {
-
+const Table: React.FC<TableProps> = ({ tableData, columns, tableProgress }) => {
     return (
         <>
             <DataTable
@@ -34,6 +38,6 @@ const Table = ({ tableData, columns, tableProgress }) => {
             />
         </>
     );
-}
+};
 
 export default memo(Table);
