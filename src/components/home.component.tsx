@@ -77,7 +77,7 @@ const Home: React.FC = () => {
             });
             columnNames.current = columns;
 
-            const worker = new Worker(new URL('../web-workers/file-upload.worker.js', import.meta.url));
+            const worker = new Worker(new URL('../web-workers/file-upload.worker.ts', import.meta.url));
 
             const messageData = {
                 headers,
@@ -86,17 +86,17 @@ const Home: React.FC = () => {
             worker.postMessage(messageData);
 
             worker.onmessage = (event) => {
-                let { data, options } = event.data;
+                let { data, newOptions } = event.data;
                 allTableData.current = data;
-                allOptions.current = options;
+                allOptions.current = newOptions;
 
 
                 let i = 0;
-                let newOptions = JSON.parse(JSON.stringify(options));
-                for (let header in newOptions) {
-                    if (newOptions[header].length > 200) {
+                let parsedNewOptions = JSON.parse(JSON.stringify(newOptions));
+                for (let header in parsedNewOptions) {
+                    if (parsedNewOptions[header].length > 200) {
                         bigOptions.current[header] = i;
-                        newOptions[header] = newOptions[header].slice(0, 200);
+                        parsedNewOptions[header] = parsedNewOptions[header].slice(0, 200);
                     }
                     i++;
                 }
@@ -105,7 +105,7 @@ const Home: React.FC = () => {
 
                 if (!queryParams) {
                     setTableData(data);
-                    setDropdownOptions(newOptions);
+                    setDropdownOptions(parsedNewOptions);
                 }
 
                 localStorage.setItem("fileData", JSON.stringify(fileData));
@@ -120,7 +120,7 @@ const Home: React.FC = () => {
         , [fileData])
 
 
-    // for bookmark management, and populating data when query params exist
+    // for bookmark management, and populating data when query params exist (that is when filterring needs to be done)
     useEffect(() => {
         if (headers && queryParams) {
             console.log('bookmark management');
@@ -128,7 +128,7 @@ const Home: React.FC = () => {
 
             filter.current = queryParams;
 
-            const worker = new Worker(new URL('../web-workers/filter.worker.js', import.meta.url));
+            const worker = new Worker(new URL('../web-workers/filter.worker.ts', import.meta.url));
             const messageData = {
                 allTableData,
                 allOptions,
@@ -139,11 +139,11 @@ const Home: React.FC = () => {
             worker.postMessage(messageData);
 
             worker.onmessage = (event) => {
-                const { data, newOptions } = event.data;
+                const { data, newOptionsArr } = event.data;
                 console.log('worker2');
 
                 setTableData(data);
-                setDropdownOptions(newOptions);
+                setDropdownOptions(newOptionsArr);
             };
 
             return () => {
