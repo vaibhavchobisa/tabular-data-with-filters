@@ -6,6 +6,7 @@
     "module": "ESNext",
     "skipLibCheck": true,
     "allowSyntheticDefaultImports": true,
+    "typeRoots": ["src/@types"],
 
     /* Bundler mode */
     "moduleResolution": "bundler",
@@ -20,7 +21,6 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    "types": ["@types/node", "@types/jsurl"]
   },
   "include": ["src"],
   "references": [{ "path": "./tsconfig.node.json" }]

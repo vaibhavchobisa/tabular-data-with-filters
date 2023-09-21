@@ -2928,11 +2928,6 @@
   resolved "https://registry.yarnpkg.com/@types/json-schema/-/json-schema-7.0.12.tgz#d70faba7039d5fca54c83c7dbab41051d2b6f6cb"
   integrity sha512-Hr5Jfhc9eYOQNPYO5WLDq/n4jqijdHNlDXjuAQkkt+mWdQR+XJToOHrsD4cPaMXpn6KO7y2+wM8AZEs8VpBLVA==
 
-"@types/jsurl@^1.2.30":
-  version "1.2.30"
-  resolved "https://registry.yarnpkg.com/@types/jsurl/-/jsurl-1.2.30.tgz#ee8e45afc4f931918e87c30fb642d5838ca2a6a2"
-  integrity sha512-m5MDbdywrIH9A/WRPkkoTpHRaROkVq9jEpQp+n1SfgtFFs0eEeDGiDWYcD1592vxiFmM5m8uEewDIUqYFQrNzA==
-
 "@types/lodash@^4.14.167":
   version "4.14.197"
   resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.197.tgz#e95c5ddcc814ec3e84c891910a01e0c8a378c54b"
