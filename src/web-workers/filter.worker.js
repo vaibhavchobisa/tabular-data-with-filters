@@ -1,29 +1,12 @@
 self.addEventListener("message", (event) => {
-  const { selectedList, allTableData, allOptions, headers, header, filter } =
-    event.data;
+  const { allTableData, allOptions, headers, queryParams } = event.data;
 
-  const result = filterWorker(
-    selectedList,
-    allTableData,
-    allOptions,
-    headers,
-    header,
-    filter
-  );
+  const result = filterWorker(allTableData, allOptions, headers, queryParams);
 
   self.postMessage(result);
 });
 
-function filterWorker(
-  selectedList,
-  allTableData,
-  allOptions,
-  headers,
-  header,
-  filter
-) {
-  filter.current[header] = selectedList;
-
+function filterWorker(allTableData, allOptions, headers, queryParams) {
   const arrangeFilterByLength = (obj) => {
     const keyValueArray = Object.entries(obj);
     keyValueArray.sort((a, b) => b[1].length - a[1].length);
@@ -31,14 +14,15 @@ function filterWorker(
 
     return sortedObject;
   };
-  const sortedFilter = arrangeFilterByLength(filter.current);
+
+  const sortedFilter = arrangeFilterByLength(queryParams);
 
   const applyFilters = () => {
     let i = 0;
     const newOptions = {};
     let data = allTableData.current;
 
-    headers.forEach((header) => {
+    headers?.forEach((header) => {
       newOptions[header] = new Set();
     });
 
@@ -59,24 +43,22 @@ function filterWorker(
       i = 0;
       for (const header in sortedFilter) {
         if (i === 0 && idx === data.length - 1) {
-          newOptions[header] = allOptions[header];
+          newOptions[header] = allOptions.current[header];
         } else {
           if (rowObj[header] !== "No Data") {
-            newOptions[header].add(rowObj[header]);
+            newOptions[header]?.add(rowObj[header]);
           }
         }
         i += 1;
       }
     });
 
-    headers.forEach((header) => {
+    headers?.forEach((header) => {
       newOptions[header] = [...newOptions[header]];
       newOptions[header].sort((a, b) => a - b);
     });
 
-    const newFilter = filter;
-
-    return { data, newOptions, newFilter };
+    return { data, newOptions };
   };
 
   return applyFilters();

@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import Multiselect from 'multiselect-react-dropdown';
-import { memo, useEffect } from 'react';
+import { memo } from 'react';
 
 const dropdownStyle = {
     multiselectContainer: {
@@ -15,45 +15,21 @@ const dropdownStyle = {
     }
 }
 
-const Dropdown = ({ allTableData, setTableData, allOptions, options, setOptions, headers, header, filter, setTableProgress }) => {
-
-    const selectUnselectHandler = (selectedList) => {
-        setTableProgress(true);
-        // setDropdownProgress(true);
-
-        const worker = new Worker(new URL('../web-workers/filter.worker.js', import.meta.url));
-        const messageData = {
-            allTableData,
-            allOptions,
-            selectedList,
-            headers,
-            header,
-            filter,
-        }
-        worker.postMessage(messageData);
-
-        worker.onmessage = (event) => {
-            const { data, newOptions, newFilter } = event.data;
-            filter.current = newFilter.current;
-            setTableData(() => data);
-            setOptions(() => newOptions);
-        };
-
-        return () => worker.terminate();
-    }
+const Dropdown = ({ options, header, onSelectRemove, preSelectedValues, tableProgress }) => {
 
     return (
         <>
             <Multiselect
                 isObject={false}
-                onRemove={selectUnselectHandler}
-                onSelect={selectUnselectHandler}
-                showCheckbox
+                onRemove={(selectedList, selectRemoveValue) => onSelectRemove(selectedList, selectRemoveValue, header)}
+                onSelect={(selectedList, selectRemoveValue) => onSelectRemove(selectedList, selectRemoveValue, header)}
                 options={options}
                 placeholder={header}
                 style={dropdownStyle}
+                selectedValues={preSelectedValues}
+                showCheckbox
                 showArrow
-            // loading={dropdownProgress}
+                loading={tableProgress}
             />
         </>
     )
