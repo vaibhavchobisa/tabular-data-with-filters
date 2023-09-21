@@ -19,7 +19,7 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    "types": ["@types/jsurl"]
+    "types": ["@types/node", "@types/jsurl"]
   },
   "include": ["src"],
   "references": [{ "path": "./tsconfig.node.json" }]
