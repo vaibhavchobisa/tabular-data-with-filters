@@ -4,7 +4,10 @@ self.addEventListener("message", (event: MessageEvent) => {
   self.postMessage(result);
 });
 
-function populateData(headers: string[] | undefined, rows: (string | null)[][] | undefined) {
+function populateData(
+  headers: string[] | undefined,
+  rows: (string | null)[][] | undefined
+) {
   const data: { [key: string]: any }[] = [];
   const options: { [key: string]: Set<any> } = {};
   const newOptions: { [key: string]: number[] } = {};
@@ -16,7 +19,7 @@ function populateData(headers: string[] | undefined, rows: (string | null)[][] |
   });
 
   rows?.forEach((row: (string | null)[], i: number) => {
-    const rowObj: { [key: string]: any } = {};
+    const rowObj: { [key: string]: number | string } = {};
     rowObj.id = i + 1;
 
     headers?.forEach((header: string | undefined, j: number) => {

@@ -6,14 +6,15 @@ self.addEventListener("message", (event: MessageEvent) => {
 
 function filterWorker(
   allTableData: { current: any[] },
-  allOptions: { current: { [key: string]: any[] } },
+  allOptions: { current: { [key: string]: string[] } },
   headers: string[] | undefined,
-  queryParams: { [key: string]: any[] }
+  queryParams: { [key: string]: string[] }
 ) {
   const arrangeFilterByLength = (obj: { [key: string]: any[] }) => {
     const keyValueArray = Object.entries(obj);
     keyValueArray.sort((a, b) => b[1].length - a[1].length);
-    const sortedObject: { [key: string]: any[] } = Object.fromEntries(keyValueArray);
+    const sortedObject: { [key: string]: any[] } =
+      Object.fromEntries(keyValueArray);
     return sortedObject;
   };
 
@@ -22,7 +23,7 @@ function filterWorker(
   const applyFilters = () => {
     let i = 0;
     const newOptions: { [key: string]: Set<any> } = {};
-      const newOptionsArr: { [key: string]: number[] } = {};
+    const newOptionsArr: { [key: string]: number[] } = {};
     let data = allTableData.current;
 
     headers?.forEach((header) => {
