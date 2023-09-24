@@ -1,17 +1,20 @@
-self.addEventListener("message", (event) => {
+self.addEventListener("message", (event: MessageEvent) => {
   const { allTableData, allOptions, headers, queryParams } = event.data;
-
   const result = filterWorker(allTableData, allOptions, headers, queryParams);
-
   self.postMessage(result);
 });
 
-function filterWorker(allTableData, allOptions, headers, queryParams) {
-  const arrangeFilterByLength = (obj) => {
+function filterWorker(
+  allTableData: { current: any[] },
+  allOptions: { current: { [key: string]: string[] } },
+  headers: string[] | undefined,
+  queryParams: { [key: string]: string[] }
+) {
+  const arrangeFilterByLength = (obj: { [key: string]: any[] }) => {
     const keyValueArray = Object.entries(obj);
     keyValueArray.sort((a, b) => b[1].length - a[1].length);
-    const sortedObject = Object.fromEntries(keyValueArray);
-
+    const sortedObject: { [key: string]: any[] } =
+      Object.fromEntries(keyValueArray);
     return sortedObject;
   };
 
@@ -19,7 +22,8 @@ function filterWorker(allTableData, allOptions, headers, queryParams) {
 
   const applyFilters = () => {
     let i = 0;
-    const newOptions = {};
+    const newOptions: { [key: string]: Set<any> } = {};
+    const newOptionsArr: { [key: string]: number[] } = {};
     let data = allTableData.current;
 
     headers?.forEach((header) => {
@@ -43,7 +47,7 @@ function filterWorker(allTableData, allOptions, headers, queryParams) {
       i = 0;
       for (const header in sortedFilter) {
         if (i === 0 && idx === data.length - 1) {
-          newOptions[header] = allOptions.current[header];
+          newOptions[header] = new Set(allOptions.current[header]);
         } else {
           if (rowObj[header] !== "No Data") {
             newOptions[header]?.add(rowObj[header]);
@@ -54,11 +58,11 @@ function filterWorker(allTableData, allOptions, headers, queryParams) {
     });
 
     headers?.forEach((header) => {
-      newOptions[header] = [...newOptions[header]];
-      newOptions[header].sort((a, b) => a - b);
+      newOptionsArr[header] = [...newOptions[header]];
+      newOptionsArr[header].sort((a, b) => a - b);
     });
 
-    return { data, newOptions };
+    return { data, newOptionsArr };
   };
 
   return applyFilters();

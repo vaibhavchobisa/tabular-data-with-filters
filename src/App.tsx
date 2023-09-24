@@ -1,3 +1,4 @@
+import React from 'react';
 import {
   Routes,
   Route,
@@ -5,12 +6,12 @@ import {
 
 import Home from './components/home.component';
 
-const App = () => {
+const App: React.FC = () => {
   return (
     <Routes>
       <Route index element={<Home />} />
     </Routes>
-  )
-}
+  );
+};
 
 export default App;
